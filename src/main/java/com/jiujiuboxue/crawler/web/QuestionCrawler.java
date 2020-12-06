@@ -1,7 +1,9 @@
 package com.jiujiuboxue.crawler.web;
 
-import com.jiujiuboxue.modules.tiku.entity.Question;
-import com.jiujiuboxue.modules.tiku.entity.Category;
+import com.jiujiuboxue.module.tiku.entity.Grade;
+import com.jiujiuboxue.module.tiku.entity.Question;
+import com.jiujiuboxue.module.tiku.entity.SchoolType;
+import com.jiujiuboxue.module.tiku.entity.Subject;
 import org.htmlcleaner.XPatherException;
 
 import java.io.IOException;
@@ -15,10 +17,12 @@ public interface QuestionCrawler {
     /**
      * Get Object from url
      * @param url
-     * @param query
+     * @param schoolType
+     * @param grade
+     * @param subject
      * @return
      */
-    List<Question> crawler(String url, Category category) throws IOException, XPatherException;
+    List<Question> crawler(String url, SchoolType schoolType, Grade grade, Subject subject) throws IOException, XPatherException;
 
 }
 

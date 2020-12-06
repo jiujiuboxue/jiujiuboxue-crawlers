@@ -1,11 +1,10 @@
 package com.jiujiuboxue.crawler.util;
 
-import com.jiujiuboxue.modules.tiku.entity.QuestionImage;
+import com.jiujiuboxue.module.tiku.entity.QuestionImage;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -18,7 +17,7 @@ public class ImageUtil {
         boolean success = false;
         byte[] bytes = null;
         String imagesExtends = null;
-        QuestionImage questionImage = new QuestionImage();
+        QuestionImage questionImage = null;
         while (success != true && retry <= 3) {
             try {
                 String[] tmpList = imgUrl.split("\\.");
@@ -29,9 +28,11 @@ public class ImageUtil {
                 ImageIO.write(image, imagesExtends, out);
                 bytes = out.toByteArray();
                 success = true;
-                questionImage = new QuestionImage();
-                questionImage.setExtensionName(imagesExtends);
-                questionImage.setImage(bytes);
+
+                questionImage = QuestionImage.builder()
+                        .extensionName(imagesExtends)
+                        .image(new String(bytes, "utf-8"))
+                        .build();
 
             } catch (Exception ex) {
               System.out.println(ex.toString());

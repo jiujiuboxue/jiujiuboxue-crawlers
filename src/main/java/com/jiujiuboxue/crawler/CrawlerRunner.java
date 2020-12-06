@@ -2,11 +2,13 @@ package com.jiujiuboxue.crawler;
 
 
 import com.jiujiuboxue.crawler.web.impl.CrawlerFrom21Crawler;
-import com.jiujiuboxue.modules.tiku.entity.Question;
-import com.jiujiuboxue.modules.tiku.service.QuestionService;
+import com.jiujiuboxue.module.tiku.entity.Grade;
+import com.jiujiuboxue.module.tiku.entity.Question;
+import com.jiujiuboxue.module.tiku.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
 import java.util.List;
 
 
@@ -35,12 +37,12 @@ public class CrawlerRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        List<Question> questionList = crawler.crawler("http://tiku.21cnjy.com/tiku.php?mod=quest&channel=3&cid=0&type=1&xd=2", null);
+        List<Question> questionList = crawler.crawler("http://tiku.21cnjy.com/tiku.php?mod=quest&channel=3&cid=0&type=1&xd=2", null,null,null);
 
         for (Question question :
                 questionList) {
             try{
-                questionService.save(question);
+                questionService.Save(question);
             }catch (Exception ex)
             {
                 System.out.println(ex.toString());

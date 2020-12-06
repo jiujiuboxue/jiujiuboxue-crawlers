@@ -1,7 +1,12 @@
 package com.jiujiuboxue.crawler.web;
 
+import com.jiujiuboxue.crawler.util.ImageUtil;
+import com.jiujiuboxue.crawler.web.impl.QuestionImageWarpper;
+import com.jiujiuboxue.module.tiku.entity.IMAGETYPE;
+import com.jiujiuboxue.module.tiku.entity.QuestionImage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -57,6 +62,44 @@ public class CrawlerBase {
         }
         return stringBuffer.toString();
     }
+
+    public QuestionImageWarpper getImageList(Element element,
+                                             String parentId,
+                                             IMAGETYPE imageType, String fullContent) throws IOException {
+
+        QuestionImageWarpper questionImageWarpper = new QuestionImageWarpper();
+        Elements imgElements = element.getElementsByTag("img");
+
+        int index = 1;
+        for (Element imgElement : imgElements) {
+            String imgUrl = imgElement.attributes().get("src");
+            QuestionImage questionImage = ImageUtil.getQuestionImageFromUrl(imgUrl);
+            if (questionImage == null) {
+                continue;
+            }
+
+            switch (imageType) {
+                case QUESTIONANSWER:
+                    questionImage.setType(String.valueOf(IMAGETYPE.QUESTIONANSWER));
+                    break;
+                case QUESTIONANALYSIS:
+                    questionImage.setType(String.valueOf(IMAGETYPE.QUESTIONANALYSIS));
+                    break;
+                case QUESTIONCONTENT:
+                    questionImage.setType(String.valueOf(IMAGETYPE.QUESTIONCONTENT));
+                    break;
+            }
+            questionImage.setId(parentId.concat(String.valueOf(index)));
+            fullContent = fullContent.replace(imgElement.toString(), String.format("@%s@", questionImage.getId()));
+            index++;
+            questionImage.setType(imageType.toString());
+            questionImageWarpper.getQuestionImageList().add(questionImage);
+        }
+        questionImageWarpper.setContent(fullContent);
+        return questionImageWarpper;
+    }
+
+
 
 
 }
