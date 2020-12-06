@@ -1,7 +1,6 @@
-package com.jiujiuboxue.crawler.web;
+package com.jiujiuboxue.crawler.web.impl;
 
 import com.jiujiuboxue.crawler.util.ImageUtil;
-import com.jiujiuboxue.crawler.web.impl.QuestionImageWarpper;
 import com.jiujiuboxue.module.tiku.entity.IMAGETYPE;
 import com.jiujiuboxue.module.tiku.entity.QuestionImage;
 import org.jsoup.Jsoup;
