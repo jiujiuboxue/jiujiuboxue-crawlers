@@ -9,9 +9,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
 
 
 /**
@@ -36,34 +34,34 @@ public class CrawlerBase {
     }
 
 
-    public static String getSHA256(String str) {
-        MessageDigest messageDigest;
-        String encodestr = str;
-        try {
-            messageDigest = MessageDigest.getInstance("SHA-256");
-            messageDigest.update(str.getBytes("UTF-8"));
-            encodestr = byte2Hex(messageDigest.digest());
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return encodestr;
-    }
-
-    private static String byte2Hex(byte[] bytes){
-        StringBuffer stringBuffer = new StringBuffer();
-        String temp = null;
-        for (int i=0;i<bytes.length;i++){
-            temp = Integer.toHexString(bytes[i] & 0xFF);
-            if (temp.length()==1){
-                stringBuffer.append("0");
-            }
-            stringBuffer.append(temp);
-        }
-        return stringBuffer.toString();
-    }
+//    public static String getSHA256(String str) {
+//        MessageDigest messageDigest;
+//        String encodestr = str;
+//        try {
+//            messageDigest = MessageDigest.getInstance("SHA-256");
+//            messageDigest.update(str.getBytes("UTF-8"));
+//            encodestr = byte2Hex(messageDigest.digest());
+//        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//        return encodestr;
+//    }
+//
+//    private static String byte2Hex(byte[] bytes){
+//        StringBuffer stringBuffer = new StringBuffer();
+//        String temp = null;
+//        for (int i=0;i<bytes.length;i++){
+//            temp = Integer.toHexString(bytes[i] & 0xFF);
+//            if (temp.length()==1){
+//                stringBuffer.append("0");
+//            }
+//            stringBuffer.append(temp);
+//        }
+//        return stringBuffer.toString();
+//    }
 
     public QuestionImageWarpper getImageList(Element element,
-                                             String parentId,
+                                             int parentId,
                                              IMAGETYPE imageType, String fullContent) throws IOException {
 
         QuestionImageWarpper questionImageWarpper = new QuestionImageWarpper();
@@ -88,10 +86,12 @@ public class CrawlerBase {
                     questionImage.setType(String.valueOf(IMAGETYPE.QUESTIONCONTENT));
                     break;
             }
-            questionImage.setId(parentId.concat(String.valueOf(index)));
+
+            questionImage.setId(Integer.valueOf(getId(String.valueOf(parentId).concat(String.valueOf(index)))).intValue());
             fullContent = fullContent.replace(imgElement.toString(), String.format("@%s@", questionImage.getId()));
             index++;
             questionImage.setType(imageType.toString());
+
             questionImageWarpper.getQuestionImageList().add(questionImage);
         }
         questionImageWarpper.setContent(fullContent);
@@ -99,6 +99,11 @@ public class CrawlerBase {
     }
 
 
-
+    public static int getId(String content)
+    {
+        if(content==null||content.length()<=0)
+            return -1;
+        return Math.abs(content.hashCode());
+    }
 
 }

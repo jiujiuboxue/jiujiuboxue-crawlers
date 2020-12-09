@@ -2,7 +2,6 @@ package com.jiujiuboxue.crawler;
 
 
 import com.jiujiuboxue.crawler.web.impl.CrawlerFrom21Crawler;
-import com.jiujiuboxue.module.tiku.entity.Grade;
 import com.jiujiuboxue.module.tiku.entity.Question;
 import com.jiujiuboxue.module.tiku.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,8 @@ public class CrawlerRunner implements CommandLineRunner {
 
 
     private CrawlerFrom21Crawler crawler;
-    private QuestionService questionService ;
+
+    private QuestionService questionService;
 
 
     @Autowired

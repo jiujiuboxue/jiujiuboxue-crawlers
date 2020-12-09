@@ -12,10 +12,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaAuditing
 @ComponentScans(value = {
 						@ComponentScan(value = "com.jiujiuboxue.common"),
-		        		@ComponentScan(value = "com.jiujiuboxue.module.tiku")})
-@EnableJpaRepositories(basePackages = "com.jiujiuboxue.module.tiku")
-@EntityScan(basePackages = "com.jiujiuboxue.module.tiku")
+		        		@ComponentScan(value = "com.jiujiuboxue.module.tiku.*")})
+@EnableJpaRepositories(basePackages = "com.jiujiuboxue.module.tiku.*")
+		@EntityScan(basePackages = "com.jiujiuboxue.module.tiku")
 public class JiujiuboxueCrawlersApplication {
+
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(JiujiuboxueCrawlersApplication.class, args);

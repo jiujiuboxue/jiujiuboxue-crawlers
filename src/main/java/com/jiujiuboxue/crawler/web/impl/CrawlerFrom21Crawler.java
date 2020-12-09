@@ -77,8 +77,8 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
 
         Question question = Question.builder()
                 .fullContent(questionFullContent)
-                .content(StringUtil.removeHtmlTag(questionFullContent))
-                .id(getSHA256(content))
+                .content(content)
+                .id(getId(content))
                 .build();
 
         QuestionImageWarpper questionImageWrapper = getImageList(element, question.getId(), IMAGETYPE.QUESTIONCONTENT, questionFullContent);
@@ -93,27 +93,28 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
             String answerContent = StringUtil.removeHtmlTag(answerFullContent);
             QuestionAnswer questionAnswer = QuestionAnswer.builder()
                     .answer(answerContent)
-                    .id(getSHA256(answerContent))
+                    .id(getId(String.valueOf(question.getId()).concat(String.valueOf(getId(answerContent)))))
                     .build();
 
-            QuestionImageWarpper questionAnswerImageWrapper = getImageList(contentElements.first(), questionAnswer.getId(), IMAGETYPE.QUESTIONANSWER, answerFullContent);
+            QuestionImageWarpper questionAnswerImageWrapper = getImageList(answerElements.first(), questionAnswer.getId(), IMAGETYPE.QUESTIONANSWER, answerFullContent);
             questionAnswer.setFullAnswer(questionAnswerImageWrapper.getContent());
             questionAnswer.setQuestionAnswerImageSet(questionAnswerImageWrapper.getQuestionImageList());
         }
+
         if(questionAnswerSet!=null && questionAnswerSet.size()>0) {
             question.setQuestionAnswerSet(questionAnswerSet);
         }
 
         //Anaysis
         Set<QuestionAnalysis> questionAnalysisSet = new HashSet<>();
-        Elements analysisElements = doc.select("");
+        Elements analysisElements = doc.select("div.answer_detail dl dd p:nth-child(2) i");
         if(analysisElements!=null)
         {
             String analysisFullContent = analysisElements.first().toString();
             String analysisContent = StringUtil.removeHtmlTag(StringUtil.RemoveString(analysisFullContent,"解析"));
 
             QuestionAnalysis questionAnalysis = QuestionAnalysis.builder()
-                       .id(getSHA256(analysisContent))
+                       .id(getId(String.valueOf(question.getId()).concat(String.valueOf(getId(analysisContent)))))
                        .analysis(analysisContent)
                        .build();
 
@@ -123,9 +124,9 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
             questionAnalysis.setFullAnalysis(analysisQuestionImageWrapper.getContent());
             questionAnalysisSet.add(questionAnalysis);
         }
-        if(questionAnalysisSet!=null && questionAnalysisSet.size()>0) {
-            question.setQuestionAnalysisSet(questionAnalysisSet);
-        }
+//        if(questionAnalysisSet!=null && questionAnalysisSet.size()>0) {
+//            question.setQuestionAnalysisSet(questionAnalysisSet);
+//        }
 
         return question;
     }

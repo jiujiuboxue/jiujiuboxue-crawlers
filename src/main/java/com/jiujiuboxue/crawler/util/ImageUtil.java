@@ -31,7 +31,7 @@ public class ImageUtil {
 
                 questionImage = QuestionImage.builder()
                         .extensionName(imagesExtends)
-                        .image(new String(bytes, "utf-8"))
+                        .image(bytes)
                         .build();
 
             } catch (Exception ex) {
