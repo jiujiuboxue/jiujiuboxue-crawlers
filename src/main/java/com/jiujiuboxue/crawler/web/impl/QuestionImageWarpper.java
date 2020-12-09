@@ -1,6 +1,7 @@
 package com.jiujiuboxue.crawler.web.impl;
 
 import com.jiujiuboxue.module.tiku.entity.QuestionImage;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,4 +31,10 @@ public class QuestionImageWarpper {
     public void setContent(String content) {
         this.content = content;
     }
+
+
+    public void addQuestionImage(QuestionImage questionImage) {
+        this.questionImageList.add(questionImage);
+    }
+
 }

@@ -42,7 +42,7 @@ public class CrawlerRunner implements CommandLineRunner {
         for (Question question :
                 questionList) {
             try{
-                questionService.Save(question);
+                questionService.save(question);
             }catch (Exception ex)
             {
                 System.out.println(ex.toString());

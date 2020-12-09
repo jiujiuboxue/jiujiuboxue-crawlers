@@ -82,8 +82,18 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
                 .build();
 
         QuestionImageWarpper questionImageWrapper = getImageList(element, question.getId(), IMAGETYPE.QUESTIONCONTENT, questionFullContent);
-        question.setQuestionImageSet(questionImageWrapper.getQuestionImageList());
-        question.setFullContent(StringUtil.removeHtmlTag(questionImageWrapper.getContent()));
+        if (questionImageWrapper != null) {
+            Set<QuestionImage> questionList = questionImageWrapper.getQuestionImageList();
+            if (questionList != null && questionList.size() > 0) {
+                for (QuestionImage questionImage : questionList) {
+                    questionImage.setQuestion(question);
+                    question.addQuestionImage(questionImage);
+                }
+            }
+            question.setFullContent(StringUtil.removeHtmlTag(questionImageWrapper.getContent()));
+        } else {
+            question.setFullContent(questionFullContent);
+        }
 
         //Answer
         Set<QuestionAnswer> questionAnswerSet = new HashSet<>();
@@ -93,52 +103,85 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
             String answerContent = StringUtil.removeHtmlTag(answerFullContent);
             QuestionAnswer questionAnswer = QuestionAnswer.builder()
                     .answer(answerContent)
-                    .id(getId(String.valueOf(question.getId()).concat(String.valueOf(getId(answerContent)))))
+                    .id(question.getId().concat("-").concat(getId(answerContent)))
+                    .question(question)
                     .build();
 
             QuestionImageWarpper questionAnswerImageWrapper = getImageList(answerElements.first(), questionAnswer.getId(), IMAGETYPE.QUESTIONANSWER, answerFullContent);
-            questionAnswer.setFullAnswer(questionAnswerImageWrapper.getContent());
-            questionAnswer.setQuestionAnswerImageSet(questionAnswerImageWrapper.getQuestionImageList());
+            if (questionImageWrapper != null) {
+                Set<QuestionImage> questionImageList = questionAnswerImageWrapper.getQuestionImageList();
+                if (questionImageList != null && questionImageList.size() > 0) {
+                    for (QuestionImage questionImage : questionImageList) {
+                        questionImage.setQuestionAnswer(questionAnswer);
+                        questionAnswer.addQuestionAnswerImage(questionImage);
+                    }
+                }
+                questionAnswer.setFullAnswer(questionAnswerImageWrapper.getContent());
+            } else {
+                questionAnswer.setFullAnswer(answerFullContent);
+            }
+            questionAnswerSet.add(questionAnswer);
         }
-
-        if(questionAnswerSet!=null && questionAnswerSet.size()>0) {
-            question.setQuestionAnswerSet(questionAnswerSet);
+        if(questionAnswerSet!=null&& questionAnswerSet.size() >0)
+        {
+            for (QuestionAnswer questionAnswer :
+                    questionAnswerSet) {
+                questionAnswer.setQuestion(question);
+                question.addQuestionAnswer(questionAnswer);
+            }
         }
 
         //Anaysis
         Set<QuestionAnalysis> questionAnalysisSet = new HashSet<>();
         Elements analysisElements = doc.select("div.answer_detail dl dd p:nth-child(2) i");
-        if(analysisElements!=null)
-        {
+        if (analysisElements != null) {
             String analysisFullContent = analysisElements.first().toString();
-            String analysisContent = StringUtil.removeHtmlTag(StringUtil.RemoveString(analysisFullContent,"解析"));
+            String analysisContent = StringUtil.removeHtmlTag(StringUtil.RemoveString(analysisFullContent, "解析"));
 
             QuestionAnalysis questionAnalysis = QuestionAnalysis.builder()
-                       .id(getId(String.valueOf(question.getId()).concat(String.valueOf(getId(analysisContent)))))
-                       .analysis(analysisContent)
-                       .build();
+                    .id(question.getId().concat("-").concat(getId(analysisContent)))
+                    .analysis(analysisContent)
+                    .question(question)
+                    .build();
 
-
-            QuestionImageWarpper analysisQuestionImageWrapper = getImageList(analysisElements.first(),questionAnalysis.getId(), IMAGETYPE.QUESTIONANALYSIS,analysisFullContent);
-            questionAnalysis.setQuestionAnalysisImageSet(analysisQuestionImageWrapper.getQuestionImageList());
-            questionAnalysis.setFullAnalysis(analysisQuestionImageWrapper.getContent());
-            questionAnalysisSet.add(questionAnalysis);
+            QuestionImageWarpper analysisQuestionImageWrapper = getImageList(analysisElements.first(), questionAnalysis.getId(), IMAGETYPE.QUESTIONANALYSIS, analysisFullContent);
+            if (analysisQuestionImageWrapper != null) {
+                Set<QuestionImage> questionImages = analysisQuestionImageWrapper.getQuestionImageList();
+                if (questionImages != null && questionImages.size() > 0) {
+                    for (QuestionImage questionImage :
+                            questionImages) {
+                        questionImage.setQuestionAnalysis(questionAnalysis);
+                        questionAnalysis.addQuestionAnalysisImage(questionImage);
+                    }
+                }
+                questionAnalysis.setFullAnalysis(questionImageWrapper.getContent());
+            } else {
+                questionAnalysis.setFullAnalysis(analysisFullContent);
+            }
         }
-//        if(questionAnalysisSet!=null && questionAnalysisSet.size()>0) {
-//            question.setQuestionAnalysisSet(questionAnalysisSet);
-//        }
+
+        if(questionAnalysisSet!=null && questionAnalysisSet.size()>0){
+            for (QuestionAnalysis questionAnalysis :
+                    questionAnalysisSet) {
+                questionAnalysis.setQuestion(question);
+                question.addQuestionAnalysis(questionAnalysis);
+            }
+        }
+
+
+
 
         return question;
     }
 
     @Override
-    public List<Question> crawler(String url,SchoolType schoolType, Grade grade, Subject subject) throws IOException, XPatherException {
+    public List<Question> crawler(String url, SchoolType schoolType, Grade grade, Subject subject) throws IOException, XPatherException {
 
         List<Question> questionList = new ArrayList<>();
         List<String> urlList = getUrlList(url, "p.btns a");
         for (String urlTmp : urlList) {
-           Question question = getQuestionContent(urlTmp);
-           questionList.add(question);
+            Question question = getQuestionContent(urlTmp);
+            questionList.add(question);
         }
         return questionList;
     }

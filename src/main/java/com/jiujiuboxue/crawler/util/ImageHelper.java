@@ -10,7 +10,7 @@ import java.net.URL;
 /**
  * @author wayne
  */
-public class ImageUtil {
+public class ImageHelper {
 
     public static QuestionImage getQuestionImageFromUrl(String imgUrl) {
         int retry = 0;

@@ -42,6 +42,12 @@
 			<version>1.13.1</version>
 		</dependency>
 		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+			<version>1.18.16</version>
+		</dependency>
+		<dependency>
 			<groupId>com.jiujiuboxue</groupId>
 			<artifactId>jiujiuboxue-module-tiku</artifactId>
 			<version>1.0.0</version>
