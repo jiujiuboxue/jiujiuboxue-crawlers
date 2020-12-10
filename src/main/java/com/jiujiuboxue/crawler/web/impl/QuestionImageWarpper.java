@@ -12,15 +12,15 @@ import java.util.Set;
  */
 public class QuestionImageWarpper {
 
-    private Set<QuestionImage> questionImageList = new HashSet<>();
+    private List<QuestionImage> questionImageList = new ArrayList();
 
     private String content;
 
-    public Set<QuestionImage> getQuestionImageList() {
+    public List<QuestionImage> getQuestionImageList() {
         return questionImageList;
     }
 
-    public void setQuestionImageList(Set<QuestionImage> questionImageList) {
+    public void setQuestionImageList(List<QuestionImage> questionImageList) {
         this.questionImageList = questionImageList;
     }
 

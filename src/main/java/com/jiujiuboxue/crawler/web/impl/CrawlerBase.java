@@ -1,6 +1,5 @@
 package com.jiujiuboxue.crawler.web.impl;
 
-import com.jiujiuboxue.common.utils.ImageUtil;
 import com.jiujiuboxue.crawler.CrawlerConfiguration;
 import com.jiujiuboxue.crawler.util.ImageHelper;
 import com.jiujiuboxue.module.tiku.entity.IMAGETYPE;
@@ -11,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.imageio.stream.FileImageOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -37,33 +37,6 @@ public class CrawlerBase {
         Document doc = Jsoup.parse(content);
         return doc.getElementsByTag(tag);
     }
-
-
-//    public static String getSHA256(String str) {
-//        MessageDigest messageDigest;
-//        String encodestr = str;
-//        try {
-//            messageDigest = MessageDigest.getInstance("SHA-256");
-//            messageDigest.update(str.getBytes("UTF-8"));
-//            encodestr = byte2Hex(messageDigest.digest());
-//        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        return encodestr;
-//    }
-//
-//    private static String byte2Hex(byte[] bytes){
-//        StringBuffer stringBuffer = new StringBuffer();
-//        String temp = null;
-//        for (int i=0;i<bytes.length;i++){
-//            temp = Integer.toHexString(bytes[i] & 0xFF);
-//            if (temp.length()==1){
-//                stringBuffer.append("0");
-//            }
-//            stringBuffer.append(temp);
-//        }
-//        return stringBuffer.toString();
-//    }
 
     public QuestionImageWarpper getImageList(Element element,
                                              String parentId,
@@ -106,10 +79,10 @@ public class CrawlerBase {
                 }
 
                 String fileName = questionImage.getId().concat(".").concat(questionImage.getExtensionName());
-                String filePath = crawlerConfiguration.getQuestionImagePath().concat(File.pathSeparator).concat(questionImage.getType().toString());
-                if(imageSave(filePath,fileName,questionImage.getImage()))
+                String filePath = crawlerConfiguration.getQuestionImagePath().concat(File.separator).concat(questionImage.getType().toString());
+                if(imageSave(filePath.concat(File.separator).concat(fileName),questionImage.getImage()))
                 {
-                    questionImage.setPath(filePath.concat(File.pathSeparator).concat(fileName));
+                    questionImage.setPath(fileName);
                 }
             }
         }
@@ -125,14 +98,19 @@ public class CrawlerBase {
         return String.valueOf(Math.abs(content.hashCode()));
     }
 
+    public boolean imageSave(String imagePath, byte[] imageByte) throws IOException {
 
-    public boolean imageSave(String imagePath, String imageName, byte[] imageByte) throws IOException {
-        File file = new File(imagePath);
-        if (!file.exists()) {
-            file.mkdir();
-        }
-
-        return ImageUtil.generateImage(new String(imageByte),imagePath,imageName);
-
+        if(imageByte.length<3||imageByte.equals("")) return false;
+        try{
+                FileImageOutputStream imageOutput = new FileImageOutputStream(new File(imagePath));
+                imageOutput.write(imageByte, 0, imageByte.length);
+                imageOutput.close();
+                System.out.println("Make Picture success,Please find image in " + imagePath);
+            } catch(Exception ex) {
+                System.out.println("Exception: " + ex);
+                ex.printStackTrace();
+                return false;
+            }
+        return true;
     }
 }

@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.sql.Wrapper;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -83,12 +84,8 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
 
         QuestionImageWarpper questionImageWrapper = getImageList(element, question.getId(), IMAGETYPE.QUESTIONCONTENT, questionFullContent);
         if (questionImageWrapper != null) {
-            Set<QuestionImage> questionList = questionImageWrapper.getQuestionImageList();
-            if (questionList != null && questionList.size() > 0) {
-                for (QuestionImage questionImage : questionList) {
-                    questionImage.setQuestion(question);
-                    question.addQuestionImage(questionImage);
-                }
+            if (questionImageWrapper.getQuestionImageList() != null && questionImageWrapper.getQuestionImageList().size() > 0) {
+                question.setQuestionImageList(questionImageWrapper.getQuestionImageList());
             }
             question.setFullContent(StringUtil.removeHtmlTag(questionImageWrapper.getContent()));
         } else {
@@ -96,7 +93,7 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
         }
 
         //Answer
-        Set<QuestionAnswer> questionAnswerSet = new HashSet<>();
+        List<QuestionAnswer> questionAnswerList = new ArrayList<>();
         Elements answerElements = doc.select("div.answer_detail dl dd p:nth-child(1) i");
         if (answerElements != null) {
             String answerFullContent = answerElements.first().toString();
@@ -109,30 +106,23 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
 
             QuestionImageWarpper questionAnswerImageWrapper = getImageList(answerElements.first(), questionAnswer.getId(), IMAGETYPE.QUESTIONANSWER, answerFullContent);
             if (questionImageWrapper != null) {
-                Set<QuestionImage> questionImageList = questionAnswerImageWrapper.getQuestionImageList();
-                if (questionImageList != null && questionImageList.size() > 0) {
-                    for (QuestionImage questionImage : questionImageList) {
-                        questionImage.setQuestionAnswer(questionAnswer);
-                        questionAnswer.addQuestionAnswerImage(questionImage);
-                    }
+                if (questionAnswerImageWrapper.getQuestionImageList() != null && questionAnswerImageWrapper.getQuestionImageList().size() > 0) {
+                    questionAnswer.setQuestionAnswerImageList(questionAnswerImageWrapper.getQuestionImageList());
                 }
                 questionAnswer.setFullAnswer(questionAnswerImageWrapper.getContent());
             } else {
                 questionAnswer.setFullAnswer(answerFullContent);
             }
-            questionAnswerSet.add(questionAnswer);
+            questionAnswerList.add(questionAnswer);
         }
-        if(questionAnswerSet!=null&& questionAnswerSet.size() >0)
-        {
-            for (QuestionAnswer questionAnswer :
-                    questionAnswerSet) {
-                questionAnswer.setQuestion(question);
-                question.addQuestionAnswer(questionAnswer);
-            }
+
+
+        if (questionAnswerList != null && questionAnswerList.size() > 0) {
+            question.setQuestionAnswerList(questionAnswerList);
         }
 
         //Anaysis
-        Set<QuestionAnalysis> questionAnalysisSet = new HashSet<>();
+        List<QuestionAnalysis> questionAnalysisList = new ArrayList<>();
         Elements analysisElements = doc.select("div.answer_detail dl dd p:nth-child(2) i");
         if (analysisElements != null) {
             String analysisFullContent = analysisElements.first().toString();
@@ -146,13 +136,8 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
 
             QuestionImageWarpper analysisQuestionImageWrapper = getImageList(analysisElements.first(), questionAnalysis.getId(), IMAGETYPE.QUESTIONANALYSIS, analysisFullContent);
             if (analysisQuestionImageWrapper != null) {
-                Set<QuestionImage> questionImages = analysisQuestionImageWrapper.getQuestionImageList();
-                if (questionImages != null && questionImages.size() > 0) {
-                    for (QuestionImage questionImage :
-                            questionImages) {
-                        questionImage.setQuestionAnalysis(questionAnalysis);
-                        questionAnalysis.addQuestionAnalysisImage(questionImage);
-                    }
+                if (analysisQuestionImageWrapper.getQuestionImageList() != null && analysisQuestionImageWrapper.getQuestionImageList().size() > 0) {
+                    questionAnalysis.setQuestionAnalysisImageList(analysisQuestionImageWrapper.getQuestionImageList());
                 }
                 questionAnalysis.setFullAnalysis(questionImageWrapper.getContent());
             } else {
@@ -160,17 +145,9 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
             }
         }
 
-        if(questionAnalysisSet!=null && questionAnalysisSet.size()>0){
-            for (QuestionAnalysis questionAnalysis :
-                    questionAnalysisSet) {
-                questionAnalysis.setQuestion(question);
-                question.addQuestionAnalysis(questionAnalysis);
-            }
+        if (questionAnalysisList != null && questionAnalysisList.size() > 0) {
+            question.setQuestionAnalysisList(questionAnalysisList);
         }
-
-
-
-
         return question;
     }
 
