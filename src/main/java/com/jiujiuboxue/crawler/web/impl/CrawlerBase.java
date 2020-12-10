@@ -73,13 +73,15 @@ public class CrawlerBase {
             questionImageWarpper.addQuestionImage(questionImage);
 
             if (crawlerConfiguration != null && crawlerConfiguration.getQuestionImagePath().length() > 0) {
-                File file = new File(crawlerConfiguration.getQuestionImagePath());
-                if (!file.exists()) {
-                    file.mkdir();
-                }
 
                 String fileName = questionImage.getId().concat(".").concat(questionImage.getExtensionName());
-                String filePath = crawlerConfiguration.getQuestionImagePath().concat(File.separator).concat(questionImage.getType().toString());
+                String filePath = crawlerConfiguration.getQuestionImagePath().concat(File.separator).concat(questionImage.getType().toLowerCase().toString());
+
+                File file = new File(filePath);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+
                 if(imageSave(filePath.concat(File.separator).concat(fileName),questionImage.getImage()))
                 {
                     questionImage.setPath(fileName);
@@ -100,7 +102,9 @@ public class CrawlerBase {
 
     public boolean imageSave(String imagePath, byte[] imageByte) throws IOException {
 
-        if(imageByte.length<3||imageByte.equals("")) return false;
+        if(imageByte.length<3||imageByte.equals("")) {
+            return false;
+        }
         try{
                 FileImageOutputStream imageOutput = new FileImageOutputStream(new File(imagePath));
                 imageOutput.write(imageByte, 0, imageByte.length);

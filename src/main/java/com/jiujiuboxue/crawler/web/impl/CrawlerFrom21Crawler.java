@@ -10,11 +10,9 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.sql.Wrapper;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 
 /**
@@ -42,10 +40,6 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
         return urlList;
     }
 
-    public String getQuestonContent(String fullContent) {
-        String content = "";
-        return content;
-    }
 
     public String getChoiceItemContent(String fullChoiceContent) {
         String choiceItemContent = "";
@@ -66,7 +60,6 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
     public Question getQuestionContent(String url) throws IOException {
 
         Document doc = getDocument(url);
-
         Elements contentElements = doc.select(".answer_detail dl dt  p:nth-child(1)");
         Element element = contentElements.first();
         if (element == null) {
@@ -92,59 +85,12 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
             question.setFullContent(questionFullContent);
         }
 
-        //Answer
-        List<QuestionAnswer> questionAnswerList = new ArrayList<>();
-        Elements answerElements = doc.select("div.answer_detail dl dd p:nth-child(1) i");
-        if (answerElements != null) {
-            String answerFullContent = answerElements.first().toString();
-            String answerContent = StringUtil.removeHtmlTag(answerFullContent);
-            QuestionAnswer questionAnswer = QuestionAnswer.builder()
-                    .answer(answerContent)
-                    .id(question.getId().concat("-").concat(getId(answerContent)))
-                    .question(question)
-                    .build();
-
-            QuestionImageWarpper questionAnswerImageWrapper = getImageList(answerElements.first(), questionAnswer.getId(), IMAGETYPE.QUESTIONANSWER, answerFullContent);
-            if (questionImageWrapper != null) {
-                if (questionAnswerImageWrapper.getQuestionImageList() != null && questionAnswerImageWrapper.getQuestionImageList().size() > 0) {
-                    questionAnswer.setQuestionAnswerImageList(questionAnswerImageWrapper.getQuestionImageList());
-                }
-                questionAnswer.setFullAnswer(questionAnswerImageWrapper.getContent());
-            } else {
-                questionAnswer.setFullAnswer(answerFullContent);
-            }
-            questionAnswerList.add(questionAnswer);
-        }
-
-
+        List<QuestionAnswer> questionAnswerList = getQuestionAnswer(doc,question.getId());
         if (questionAnswerList != null && questionAnswerList.size() > 0) {
             question.setQuestionAnswerList(questionAnswerList);
         }
 
-        //Anaysis
-        List<QuestionAnalysis> questionAnalysisList = new ArrayList<>();
-        Elements analysisElements = doc.select("div.answer_detail dl dd p:nth-child(2) i");
-        if (analysisElements != null) {
-            String analysisFullContent = analysisElements.first().toString();
-            String analysisContent = StringUtil.removeHtmlTag(StringUtil.RemoveString(analysisFullContent, "解析"));
-
-            QuestionAnalysis questionAnalysis = QuestionAnalysis.builder()
-                    .id(question.getId().concat("-").concat(getId(analysisContent)))
-                    .analysis(analysisContent)
-                    .question(question)
-                    .build();
-
-            QuestionImageWarpper analysisQuestionImageWrapper = getImageList(analysisElements.first(), questionAnalysis.getId(), IMAGETYPE.QUESTIONANALYSIS, analysisFullContent);
-            if (analysisQuestionImageWrapper != null) {
-                if (analysisQuestionImageWrapper.getQuestionImageList() != null && analysisQuestionImageWrapper.getQuestionImageList().size() > 0) {
-                    questionAnalysis.setQuestionAnalysisImageList(analysisQuestionImageWrapper.getQuestionImageList());
-                }
-                questionAnalysis.setFullAnalysis(questionImageWrapper.getContent());
-            } else {
-                questionAnalysis.setFullAnalysis(analysisFullContent);
-            }
-        }
-
+        List<QuestionAnalysis> questionAnalysisList = getQuestionAnalysis(doc,question.getId());
         if (questionAnalysisList != null && questionAnalysisList.size() > 0) {
             question.setQuestionAnalysisList(questionAnalysisList);
         }
@@ -163,5 +109,58 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
         return questionList;
     }
 
+
+    public List<QuestionAnswer> getQuestionAnswer(Document doc,String questionId) throws IOException {
+        //Answer
+        List<QuestionAnswer> questionAnswerList = new ArrayList<>();
+        Elements answerElements = doc.select("div.answer_detail dl dd p:nth-child(1) i");
+        if (answerElements != null) {
+            String answerFullContent = answerElements.first().toString();
+            String answerContent = StringUtil.removeHtmlTag(answerFullContent);
+            QuestionAnswer questionAnswer = QuestionAnswer.builder()
+                    .answer(answerContent)
+                    .id(questionId.concat("-").concat(getId(answerContent)))
+                    .build();
+
+            QuestionImageWarpper questionAnswerImageWrapper = getImageList(answerElements.first(), questionAnswer.getId(), IMAGETYPE.QUESTIONANSWER, answerFullContent);
+            if (questionAnswerImageWrapper != null) {
+                if (questionAnswerImageWrapper.getQuestionImageList() != null && questionAnswerImageWrapper.getQuestionImageList().size() > 0) {
+                    questionAnswer.setQuestionAnswerImageList(questionAnswerImageWrapper.getQuestionImageList());
+                }
+                questionAnswer.setFullAnswer(questionAnswerImageWrapper.getContent());
+            } else {
+                questionAnswer.setFullAnswer(answerFullContent);
+            }
+            questionAnswerList.add(questionAnswer);
+        }
+
+        return questionAnswerList;
+    }
+
+    public List<QuestionAnalysis> getQuestionAnalysis(Document doc,String questionId) throws IOException {
+        //Anaysis
+        List<QuestionAnalysis> questionAnalysisList = new ArrayList<>();
+        Elements analysisElements = doc.select("div.answer_detail dl dd p:nth-child(2) i");
+        if (analysisElements != null) {
+            String analysisFullContent = analysisElements.first().toString();
+            String analysisContent = StringUtil.removeHtmlTag(StringUtil.RemoveString(analysisFullContent, "解析"));
+
+            QuestionAnalysis questionAnalysis = QuestionAnalysis.builder()
+                    .id(questionId.concat("-").concat(getId(analysisContent)))
+                    .analysis(analysisContent)
+                    .build();
+
+            QuestionImageWarpper analysisQuestionImageWrapper = getImageList(analysisElements.first(), questionAnalysis.getId(), IMAGETYPE.QUESTIONANALYSIS, analysisFullContent);
+            if (analysisQuestionImageWrapper != null) {
+                if (analysisQuestionImageWrapper.getQuestionImageList() != null && analysisQuestionImageWrapper.getQuestionImageList().size() > 0) {
+                    questionAnalysis.setQuestionAnalysisImageList(analysisQuestionImageWrapper.getQuestionImageList());
+                }
+                questionAnalysis.setFullAnalysis(analysisQuestionImageWrapper.getContent());
+            } else {
+                questionAnalysis.setFullAnalysis(analysisFullContent);
+            }
+        }
+        return questionAnalysisList;
+    }
 
 }
