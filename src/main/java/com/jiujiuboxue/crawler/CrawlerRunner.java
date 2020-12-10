@@ -36,9 +36,7 @@ public class CrawlerRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
         List<Question> questionList = crawler.crawler("http://tiku.21cnjy.com/tiku.php?mod=quest&channel=3&cid=0&type=1&xd=2", null,null,null);
-
         for (Question question :
                 questionList) {
             try{
@@ -47,8 +45,6 @@ public class CrawlerRunner implements CommandLineRunner {
             {
                 System.out.println(ex.toString());
             }
-
-
         }
     }
 }
