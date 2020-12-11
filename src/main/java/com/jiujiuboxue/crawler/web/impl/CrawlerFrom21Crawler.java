@@ -88,11 +88,23 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
         List<QuestionAnswer> questionAnswerList = getQuestionAnswer(doc,question.getId());
         if (questionAnswerList != null && questionAnswerList.size() > 0) {
             question.setQuestionAnswerList(questionAnswerList);
+
+            for(QuestionAnswer questionAnswer : questionAnswerList)
+            {
+                questionAnswer.setQuestion(question);
+            }
         }
+
 
         List<QuestionAnalysis> questionAnalysisList = getQuestionAnalysis(doc,question.getId());
         if (questionAnalysisList != null && questionAnalysisList.size() > 0) {
             question.setQuestionAnalysisList(questionAnalysisList);
+
+            for(QuestionAnalysis questionAnalysis : questionAnalysisList)
+            {
+                questionAnalysis.setQuestion(question);
+            }
+
         }
         return question;
     }
@@ -159,6 +171,7 @@ public class CrawlerFrom21Crawler extends CrawlerBase implements QuestionCrawler
             } else {
                 questionAnalysis.setFullAnalysis(analysisFullContent);
             }
+            questionAnalysisList.add(questionAnalysis);
         }
         return questionAnalysisList;
     }
