@@ -3,14 +3,13 @@ package com.jiujiuboxue.crawler.web.impl;
 import com.jiujiuboxue.module.tiku.entity.QuestionImage;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 /**
  * @author wayne
  */
-public class QuestionImageWarpper {
+public class QuestionImageWrapper {
 
     private List<QuestionImage> questionImageList = new ArrayList();
 

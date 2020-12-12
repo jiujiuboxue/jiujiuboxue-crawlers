@@ -22,7 +22,7 @@ public interface QuestionCrawler {
      * @param subject
      * @return
      */
-    List<Question> crawler(String url, SchoolType schoolType, Grade grade, Subject subject) throws IOException, XPatherException;
+    void crawler(String url, SchoolType schoolType, Grade grade, Subject subject) throws IOException, XPatherException;
 
 }
 
