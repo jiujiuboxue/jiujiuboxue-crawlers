@@ -6,7 +6,6 @@ import com.jiujiuboxue.module.tiku.entity.*;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.imageio.stream.FileImageOutputStream;
 import java.io.File;
@@ -125,7 +124,11 @@ public class CrawlerBase {
                     file.mkdirs();
                 }
                 if (imageSave(filePath.concat(File.separator).concat(fileName), questionImage.getImage())) {
-                    questionImage.setPath(fileName);
+                    if(File.separator.equals("\\")){
+                        questionImage.setFileName(filePath.concat(File.separator).concat(fileName).replace("\\","/"));
+                    }else {
+                        questionImage.setFileName(filePath.concat(File.separator).concat(fileName));
+                    }
                 }
             }
             questionImageWrapper.addQuestionImage(questionImage);
