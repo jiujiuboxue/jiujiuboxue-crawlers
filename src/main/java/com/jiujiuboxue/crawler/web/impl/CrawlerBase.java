@@ -24,8 +24,8 @@ public class CrawlerBase {
         this.question=null;
         this.questionAnalysisList.clear();
         this.questionAnswerList.clear();
-        this.questionAnalysisList.clear();
         this.questionImageList.clear();
+        this.questionChoiceItemList.clear();
     }
 
     @Autowired
@@ -35,6 +35,7 @@ public class CrawlerBase {
     protected List<QuestionImage> questionImageList = new ArrayList<>();
     protected List<QuestionAnswer> questionAnswerList = new ArrayList<>();
     protected List<QuestionAnalysis> questionAnalysisList = new ArrayList<>();
+    protected List<QuestionChoiceItem> questionChoiceItemList = new ArrayList<>();
 
 
     protected void crawleQuestionImage(Element element) throws IOException {
@@ -83,6 +84,22 @@ public class CrawlerBase {
         this.questionAnalysisList.add(questionAnalysis);
     }
 
+
+    protected void crawleQuestionChoiceItemImage(Element element,QuestionChoiceItem questionChoiceItem) throws IOException {
+        QuestionImageWrapper questionImageWrapper = getImageList(element,questionChoiceItem.getId(),IMAGETYPE.QUESTIONCHOICEITEM,questionChoiceItem.getFullContent());
+        if(questionImageWrapper!=null)
+        {
+            questionChoiceItem.setFullContent(questionImageWrapper.getContent());
+            if(questionImageWrapper.getQuestionImageList()!=null && questionImageWrapper.getQuestionImageList().size() >0 )
+            {
+                List<QuestionImage> questionImageList = questionImageWrapper.getQuestionImageList();
+                for(QuestionImage questionImage:questionImageList) {
+                    questionImage.setQuestionChoiceItem(questionChoiceItem);
+                    this.questionImageList.add(questionImage);
+                }
+            }
+        }
+    }
 
     public QuestionImageWrapper getImageList(Element element,
                                              String parentId,

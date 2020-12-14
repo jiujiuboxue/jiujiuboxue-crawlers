@@ -78,6 +78,7 @@ public class CrawlerFrom21Crawler extends CrawlerBase {
         crawleQuestionImage(element);
         crawleQuestionAnswer(doc);
         crawleQuestionAnalysis(doc);
+        crawleQuestionChoiceItem(doc);
         save();
 
     }
@@ -117,6 +118,26 @@ public class CrawlerFrom21Crawler extends CrawlerBase {
 
             crawleQuestionAnalysisImage(analysisElements.first(), questionAnalysis);
         }
+    }
+
+
+    protected void crawleQuestionChoiceItem(Document doc) throws IOException {
+        List<QuestionChoiceItem> questionChoiceItemList = new ArrayList<>();
+        Elements choiceItems = doc.select("");
+        if(choiceItems!=null){
+            String choiceItemFullContent = choiceItems.first().toString();
+            String choiceItemContent = StringUtil.removeHtmlTag(choiceItemFullContent);
+
+            QuestionChoiceItem questionChoiceItem = QuestionChoiceItem.builder()
+                    .id(question.getId().concat("-").concat(getId(choiceItemContent)))
+                    .content(choiceItemContent)
+                    .question(question)
+                    .fullContent(choiceItemFullContent)
+                    .build();
+            crawleQuestionChoiceItemImage(choiceItems.first(),questionChoiceItem);
+        }
+
+
     }
 
     protected void save() {
