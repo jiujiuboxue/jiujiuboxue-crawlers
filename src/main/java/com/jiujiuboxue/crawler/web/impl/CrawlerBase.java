@@ -99,6 +99,7 @@ public class CrawlerBase {
                 }
             }
         }
+        this.questionChoiceItemList.add(questionChoiceItem);
     }
 
     public QuestionImageWrapper getImageList(Element element,
@@ -128,9 +129,11 @@ public class CrawlerBase {
                     break;
                 case QUESTIONCONTENT:
                     questionImage.setType(String.valueOf(IMAGETYPE.QUESTIONCONTENT));
+                case QUESTIONCHOICEITEM:
+                    questionImage.setType(String.valueOf(IMAGETYPE.QUESTIONCHOICEITEM));
+                default:
                     break;
             }
-
 
             if (crawlerConfiguration != null && crawlerConfiguration.getQuestionImagePath().length() > 0) {
                 String fileName = questionImage.getId().concat(".").concat(questionImage.getExtensionName());

@@ -4,10 +4,7 @@ import com.jiujiuboxue.common.utils.StringUtil;
 import com.jiujiuboxue.crawler.web.impl.CrawlerBase;
 import com.jiujiuboxue.module.tiku.entity.*;
 
-import com.jiujiuboxue.module.tiku.service.QuestionAnalysisService;
-import com.jiujiuboxue.module.tiku.service.QuestionAnswerService;
-import com.jiujiuboxue.module.tiku.service.QuestionImageService;
-import com.jiujiuboxue.module.tiku.service.QuestionService;
+import com.jiujiuboxue.module.tiku.service.*;
 import com.jiujiuboxue.module.tiku.service.impl.QuestionAnalysisServiceImpl;
 import com.jiujiuboxue.module.tiku.service.impl.QuestionAnswerServiceImpl;
 import com.jiujiuboxue.module.tiku.service.impl.QuestionImageServiceImpl;
@@ -34,6 +31,8 @@ public class CrawlerFrom21Crawler extends CrawlerBase {
     public QuestionAnswerService questionAnswerService;
     public QuestionAnalysisService questionAnalysisService;
     public QuestionImageService questionImageService;
+    public QuestionChoiceItemService questionChoiceItemService;
+
 
     @Autowired
     public void setQuestionService(QuestionServiceImpl questionService) {
@@ -55,6 +54,11 @@ public class CrawlerFrom21Crawler extends CrawlerBase {
         this.questionImageService = questionImageService;
     }
 
+    @Autowired
+    public void setQuestionChoiceItemService(QuestionChoiceItemService questionChoiceItemService)
+    {
+        this.questionChoiceItemService = questionChoiceItemService;
+    }
 
     public void crawlerQuestion(String url) throws IOException {
         super.clean();
@@ -123,21 +127,28 @@ public class CrawlerFrom21Crawler extends CrawlerBase {
 
     protected void crawleQuestionChoiceItem(Document doc) throws IOException {
         List<QuestionChoiceItem> questionChoiceItemList = new ArrayList<>();
-        Elements choiceItems = doc.select("");
-        if(choiceItems!=null){
-            String choiceItemFullContent = choiceItems.first().toString();
-            String choiceItemContent = StringUtil.removeHtmlTag(choiceItemFullContent);
 
-            QuestionChoiceItem questionChoiceItem = QuestionChoiceItem.builder()
-                    .id(question.getId().concat("-").concat(getId(choiceItemContent)))
-                    .content(choiceItemContent)
-                    .question(question)
-                    .fullContent(choiceItemFullContent)
-                    .build();
-            crawleQuestionChoiceItemImage(choiceItems.first(),questionChoiceItem);
-        }
+        int index = 1;
 
+        do {
+            Elements choiceItems = doc.select(String.format("div.answer_detail dl dt table tbody tr td:nth-child(%s)",String.valueOf(index)));
+            if(choiceItems==null || choiceItems.size() <=0){
+                break;
+            }
+            index ++;
+            if(choiceItems!=null){
+                String choiceItemFullContent = choiceItems.first().toString();
+                String choiceItemContent = StringUtil.removeHtmlTag(choiceItemFullContent);
 
+                QuestionChoiceItem questionChoiceItem = QuestionChoiceItem.builder()
+                        .id(question.getId().concat("-").concat(getId(choiceItemContent)))
+                        .content(choiceItemContent)
+                        .question(question)
+                        .fullContent(choiceItemFullContent)
+                        .build();
+                crawleQuestionChoiceItemImage(choiceItems.first(),questionChoiceItem);
+            }
+        }while(true);
     }
 
     protected void save() {
@@ -153,9 +164,15 @@ public class CrawlerFrom21Crawler extends CrawlerBase {
             this.questionAnalysisService.save(questionAnalysisList);
         }
 
+        if(questionChoiceItemList!=null && questionChoiceItemList.size()>0){
+           this.questionChoiceItemService.Save(questionChoiceItemList);
+        }
+
         if (questionImageList != null && questionImageList.size() > 0) {
             this.questionImageService.save(questionImageList);
         }
+
+
     }
 
 }
