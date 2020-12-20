@@ -144,6 +144,7 @@ public class CrawlerFrom21Crawler extends CrawlerBase {
                         .id(question.getId().concat("-").concat(getId(choiceItemContent)))
                         .content(choiceItemContent)
                         .question(question)
+                        .itemKey(choiceItemContent.trim().substring(0,1))
                         .fullContent(choiceItemFullContent)
                         .build();
                 crawleQuestionChoiceItemImage(choiceItems.first(),questionChoiceItem);

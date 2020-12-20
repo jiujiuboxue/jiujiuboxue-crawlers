@@ -1,8 +1,10 @@
 package com.jiujiuboxue.crawler.web.impl;
 
+import com.jiujiuboxue.common.utils.StringUtil;
 import com.jiujiuboxue.crawler.CrawlerConfiguration;
 import com.jiujiuboxue.crawler.util.ImageHelper;
 import com.jiujiuboxue.module.tiku.entity.*;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +44,7 @@ public class CrawlerBase {
 
         QuestionImageWrapper questionImageWrapper = getImageList(element, this.question.getId(), IMAGETYPE.QUESTIONCONTENT, question.getFullContent());
         if (questionImageWrapper != null) {
-            question.setFullContent(questionImageWrapper.getContent());
+            question.setFullContent(StringUtil.removeHtmlTag(questionImageWrapper.getContent()));
             if (questionImageWrapper.getQuestionImageList() != null && questionImageWrapper.getQuestionImageList().size() > 0) {
                 List<QuestionImage> questionImageList = questionImageWrapper.getQuestionImageList();
                 for (QuestionImage questionImage : questionImageList) {
@@ -57,7 +59,7 @@ public class CrawlerBase {
 
         QuestionImageWrapper questionImageWrapper = getImageList(element, questionAnswer.getId(), IMAGETYPE.QUESTIONANSWER, questionAnswer.getFullAnswer());
         if (questionImageWrapper != null) {
-            questionAnswer.setFullAnswer(questionImageWrapper.getContent());
+            questionAnswer.setFullAnswer(StringUtil.removeHtmlTag(questionImageWrapper.getContent()));
             if (questionImageWrapper.getQuestionImageList() != null && questionImageWrapper.getQuestionImageList().size() > 0) {
                 List<QuestionImage> questionImageList = questionImageWrapper.getQuestionImageList();
                 for (QuestionImage questionImage : questionImageList) {
@@ -72,7 +74,7 @@ public class CrawlerBase {
     protected  void crawleQuestionAnalysisImage(Element element,QuestionAnalysis questionAnalysis) throws IOException {
         QuestionImageWrapper questionImageWrapper = getImageList(element,questionAnalysis.getId(),IMAGETYPE.QUESTIONANALYSIS,questionAnalysis.getFullAnalysis());
         if(questionImageWrapper !=null) {
-            questionAnalysis.setFullAnalysis(questionImageWrapper.getContent());
+            questionAnalysis.setFullAnalysis(StringUtil.removeHtmlTag(questionImageWrapper.getContent()));
             if (questionImageWrapper.getQuestionImageList() != null && questionImageWrapper.getQuestionImageList().size() > 0) {
                 List<QuestionImage> questionImageList = questionImageWrapper.getQuestionImageList();
                 for (QuestionImage questionImage : questionImageList) {
@@ -89,7 +91,7 @@ public class CrawlerBase {
         QuestionImageWrapper questionImageWrapper = getImageList(element,questionChoiceItem.getId(),IMAGETYPE.QUESTIONCHOICEITEM,questionChoiceItem.getFullContent());
         if(questionImageWrapper!=null)
         {
-            questionChoiceItem.setFullContent(questionImageWrapper.getContent());
+            questionChoiceItem.setFullContent(StringUtil.removeHtmlTag(questionImageWrapper.getContent()));
             if(questionImageWrapper.getQuestionImageList()!=null && questionImageWrapper.getQuestionImageList().size() >0 )
             {
                 List<QuestionImage> questionImageList = questionImageWrapper.getQuestionImageList();
