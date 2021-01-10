@@ -4,7 +4,6 @@ import com.jiujiuboxue.common.utils.StringUtil;
 import com.jiujiuboxue.crawler.CrawlerConfiguration;
 import com.jiujiuboxue.crawler.util.ImageHelper;
 import com.jiujiuboxue.module.tiku.entity.*;
-import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,11 +145,7 @@ public class CrawlerBase {
                     file.mkdirs();
                 }
                 if (imageSave(filePath.concat(File.separator).concat(fileName), questionImage.getImage())) {
-                    if(File.separator.equals("\\")){
-                        questionImage.setFileName(filePath.concat(File.separator).concat(fileName).replace("\\","/"));
-                    }else {
-                        questionImage.setFileName(filePath.concat(File.separator).concat(fileName));
-                    }
+                   questionImage.setFileName(fileName);
                 }
             }
             questionImageWrapper.addQuestionImage(questionImage);

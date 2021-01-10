@@ -12,6 +12,12 @@ import java.util.List;
  */
 public class CrawlerApplication {
 
+    /**
+     * SchoolType: 01 小学  02 初中 03 高中
+     * Grade: 01 ~ 06 一年级 ～ 六年级
+     * Subject: 01 ~ 09 语文 数学 英语 物理 生物 化学 政治 历史 地理
+     */
+
     @Autowired
     private CrawlerFrom21Crawler crawlerFrom21Crawler;
 
@@ -27,7 +33,8 @@ public class CrawlerApplication {
 
         if (urlList != null && urlList.size() > 0) {
             for (String url : urlList) {
-                crawlerFrom21Crawler.crawlerQuestion(url);
+               // crawlerFrom21Crawler.crawlerQuestion(url);
+                crawlerFrom21Crawler.crawlerQuestion(url, "02", "", "02");
             }
         }
     }

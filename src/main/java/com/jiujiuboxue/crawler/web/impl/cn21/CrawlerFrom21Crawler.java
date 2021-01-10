@@ -60,7 +60,7 @@ public class CrawlerFrom21Crawler extends CrawlerBase {
         this.questionChoiceItemService = questionChoiceItemService;
     }
 
-    public void crawlerQuestion(String url) throws IOException {
+    public void crawlerQuestion(String url,String subjectId,String gradeId,String schoolTypeId) throws IOException {
         super.clean();
         Document doc = Jsoup.connect(url).get();
 
